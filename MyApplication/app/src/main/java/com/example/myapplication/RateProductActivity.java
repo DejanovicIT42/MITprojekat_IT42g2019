@@ -40,7 +40,27 @@ public class RateProductActivity extends AppCompatActivity {
         btnSubmitRating.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                double rating = Double.parseDouble(etRating.getText().toString());
+                String ratingText = etRating.getText().toString();
+
+                // Validate rating input
+                if (ratingText.isEmpty()) {
+                    Toast.makeText(RateProductActivity.this, "Please enter a rating", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                int rating;
+                try {
+                    rating = Integer.parseInt(ratingText);
+                } catch (NumberFormatException e) {
+                    Toast.makeText(RateProductActivity.this, "Rating must be an integer", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                // Check if rating is within the valid range
+                if (rating < 0 || rating > 5) {
+                    Toast.makeText(RateProductActivity.this, "Rating must be between 0 and 5", Toast.LENGTH_SHORT).show();
+                    return;
+                }
 
                 boolean isInserted = db.insertRating(productId, userId, rating);
                 if (isInserted) {

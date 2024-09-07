@@ -52,7 +52,7 @@ public class RegisterActivity extends AppCompatActivity {
                     Toast.makeText(RegisterActivity.this, "Please fill all fields", Toast.LENGTH_SHORT).show();
                 } else {
                     boolean isInserted = db.insertUser(username, password, isAdmin);
-                    if (true) {
+                    if (isInserted) {
                         Toast.makeText(RegisterActivity.this, "Registration successful!", Toast.LENGTH_SHORT).show();
                         // Navigate to login screen
                         Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
