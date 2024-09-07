@@ -21,7 +21,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     // Adding ratings table
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL("CREATE TABLE users (ID INTEGER PRIMARY KEY AUTOINCREMENT, USERNAME TEXT, PASSWORD TEXT)");
+        db.execSQL("CREATE TABLE users (ID INTEGER PRIMARY KEY AUTOINCREMENT, USERNAME TEXT, PASSWORD TEXT, IS_ADMIN INTEGER DEFAULT 1)");
         db.execSQL("CREATE TABLE products (ID INTEGER PRIMARY KEY AUTOINCREMENT, NAME TEXT, DESCRIPTION TEXT, AVERAGE_RATING REAL)");
         db.execSQL("CREATE TABLE ratings (ID INTEGER PRIMARY KEY AUTOINCREMENT, PRODUCT_ID INTEGER, USER_ID INTEGER, RATING REAL, FOREIGN KEY(PRODUCT_ID) REFERENCES products(ID), FOREIGN KEY(USER_ID) REFERENCES users(ID))");
     }
@@ -68,12 +68,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    public boolean insertUser(String username, String password) {
+    public boolean insertUser(String username, String password, boolean isAdmin) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
-        contentValues.put(COL_2, username);
-        contentValues.put(COL_3, password);
-        long result = db.insert(TABLE_NAME, null, contentValues);
+        contentValues.put("USERNAME", username);
+        contentValues.put("PASSWORD", password);
+        contentValues.put("IS_ADMIN", isAdmin ? 1 : 0);
+        long result = db.insert("users", null, contentValues);
         return result != -1;
     }
 
@@ -140,6 +141,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         long result = db.insert("products", null, contentValues);
         return result != -1;
+    }
+
+    public boolean isAdmin(String username) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT IS_ADMIN FROM users WHERE USERNAME=?", new String[]{username});
+        if (cursor.moveToFirst()) {
+            int isAdmin = cursor.getInt(0);
+            cursor.close();
+            return isAdmin == 1;
+        }
+        cursor.close();
+        return false;
     }
 
 

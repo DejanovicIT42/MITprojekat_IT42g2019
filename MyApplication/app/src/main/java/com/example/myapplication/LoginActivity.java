@@ -49,10 +49,13 @@ public class LoginActivity extends AppCompatActivity {
                 } else {
                     boolean isUserValid = db.checkUser(username, password);
                     if (isUserValid) {
+                        boolean isAdmin = db.isAdmin(username);
                         Toast.makeText(LoginActivity.this, "Login successful!", Toast.LENGTH_SHORT).show();
+
                         // Navigate to the main activity (after login)
-                        // Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                        // startActivity(intent);
+                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                        intent.putExtra("isAdmin", isAdmin);
+                        startActivity(intent);
                     } else {
                         Toast.makeText(LoginActivity.this, "Invalid credentials!", Toast.LENGTH_SHORT).show();
                     }
