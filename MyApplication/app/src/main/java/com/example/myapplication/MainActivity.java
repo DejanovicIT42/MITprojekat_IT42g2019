@@ -24,7 +24,9 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.android.volley.Request;
+import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
@@ -47,14 +49,15 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-//        data = findViewById(R.id.data);
-//        url = "https://worldtimeapi.org/api/timezone/Europe/Belgrade";
-        tvWelcome = findViewById(R.id.tvWelcome);
+        data = findViewById(R.id.data);
+        url = "https://worldtimeapi.org/api/timezone/Europe/Belgrade";
+//        tvWelcome = findViewById(R.id.tvWelcome);
         lvProducts = findViewById(R.id.lvProducts);
         btnAddProduct = findViewById(R.id.btnAddProduct);
-        btnModifyProduct = findViewById(R.id.btnModifyProduct);
 
         db = new DatabaseHelper(this);
+
+        fetchCurrentTime();
 
         // Check if user is admin
         isAdmin = getIntent().getBooleanExtra("isAdmin", false);
@@ -63,37 +66,45 @@ public class MainActivity extends AppCompatActivity {
             findViewById(R.id.adminButtons).setVisibility(View.VISIBLE);
         }
 
-        // Set up buttons for admins
+
+
+
+                // Set up buttons for admins
         btnAddProduct.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, AddProductActivity.class);
+                intent.putExtra("isAdmin", isAdmin);
                 startActivity(intent);
             }
         });
 
-        btnModifyProduct.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Assuming we have an activity to modify products
-                Intent intent = new Intent(MainActivity.this, ModifyProductActivity.class);
-                startActivity(intent);
-            }
-        });
+
 
         // Load and display products
         DisplayProducts();
 
-        // Handle item click to rate product
-        lvProducts.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                // Open activity to rate the product
-                Intent intent = new Intent(MainActivity.this, RateProductActivity.class);
-                intent.putExtra("productId", id); // Pass product ID to the rating activity
-                startActivity(intent);
-            }
-        });
+        if(!isAdmin) {
+            lvProducts.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    // Open activity to rate the product
+                    Intent intent = new Intent(MainActivity.this, RateProductActivity.class);
+                    intent.putExtra("productId", id); // Pass product ID to the rating activity
+                    intent.putExtra("isAdmin", isAdmin);
+                    startActivity(intent);
+                }
+            });
+        } else {
+            lvProducts.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    Intent intent = new Intent(MainActivity.this, ModifyProductActivity.class);
+                    intent.putExtra("productId", id); // Pass the product ID
+                    startActivity(intent);
+                }
+            });
+        }
 
 
     }
@@ -123,4 +134,32 @@ public class MainActivity extends AppCompatActivity {
         ProductAdapter adapter = new ProductAdapter(this, productList);
         lvProducts.setAdapter(adapter);
     }
+
+    //external api
+    private void fetchCurrentTime() {
+        RequestQueue queue = Volley.newRequestQueue(this);
+        String url = "https://worldtimeapi.org/api/timezone/Europe/Belgrade";
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
+                (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            String dateTime = response.getString("datetime");
+                            data.setText("Current Time: " + dateTime);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            data.setText("String");
+                        }
+                    }
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        data.setText("Error fetching time");
+                    }
+                });
+
+        queue.add(jsonObjectRequest);
+    }
 }
+

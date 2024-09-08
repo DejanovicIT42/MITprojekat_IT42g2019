@@ -1,5 +1,6 @@
 package com.example.myapplication;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.activity.EdgeToEdge;
@@ -21,6 +22,8 @@ public class RateProductActivity extends AppCompatActivity {
     EditText etRating;
     Button btnSubmitRating;
     DatabaseHelper db;
+
+    boolean isAdmin;
     long productId;
     long userId; // Retrieve this from user session or login data
 
@@ -66,8 +69,12 @@ public class RateProductActivity extends AppCompatActivity {
                 if (isInserted) {
                     double averageRating = db.getAverageRating(productId);
                     db.updateProductAverageRating(productId, averageRating);
-                    Toast.makeText(RateProductActivity.this, "Rating submitted successfully!", Toast.LENGTH_SHORT).show();
-                    finish(); // Close activity and return to main screen
+                    Intent intent = new Intent(RateProductActivity.this, MainActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    isAdmin = getIntent().getBooleanExtra("isAdmin", false);
+                    intent.putExtra("isAdmin", isAdmin);
+                    startActivity(intent);
+                    finish(); // Close this activity
                 } else {
                     Toast.makeText(RateProductActivity.this, "Failed to submit rating", Toast.LENGTH_SHORT).show();
                 }

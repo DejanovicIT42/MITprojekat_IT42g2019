@@ -88,7 +88,12 @@ public class AddProductActivity extends AppCompatActivity {
                 boolean isInserted = db.insertProduct(name, description, rating, image);
                 if (isInserted) {
                     Toast.makeText(AddProductActivity.this, "Product added successfully!", Toast.LENGTH_SHORT).show();
-                    finish(); // Close activity and return to main screen
+                    Intent intent = new Intent(AddProductActivity.this, MainActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    boolean isAdmin = getIntent().getBooleanExtra("isAdmin", false);
+                    intent.putExtra("isAdmin", isAdmin);
+                    startActivity(intent);
+                    finish(); // Close this activity
                 } else {
                     Toast.makeText(AddProductActivity.this, "Failed to add product", Toast.LENGTH_SHORT).show();
                 }
