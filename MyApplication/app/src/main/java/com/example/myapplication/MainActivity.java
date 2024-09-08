@@ -47,9 +47,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        data = findViewById(R.id.data);
-        url = "https://worldtimeapi.org/api/timezone/Europe/Belgrade";
-        //tvWelcome = findViewById(R.id.tvWelcome);
+//        data = findViewById(R.id.data);
+//        url = "https://worldtimeapi.org/api/timezone/Europe/Belgrade";
+        tvWelcome = findViewById(R.id.tvWelcome);
         lvProducts = findViewById(R.id.lvProducts);
         btnAddProduct = findViewById(R.id.btnAddProduct);
         btnModifyProduct = findViewById(R.id.btnModifyProduct);
