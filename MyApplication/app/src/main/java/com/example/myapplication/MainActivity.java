@@ -149,13 +149,13 @@ public class MainActivity extends AppCompatActivity {
                             data.setText("Current Time: " + dateTime);
                         } catch (Exception e) {
                             e.printStackTrace();
-                            data.setText("String");
+                            data.setText("Error fetching time");
                         }
                     }
                 }, new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        data.setText("Error fetching time");
+                        data.setText("Welcome to Lilly");
                     }
                 });
 
